@@ -1,186 +1,83 @@
-/* =====================
-   VARIABLES
-===================== */
-let isAuthenticating = false;
-
 const loginBtn = document.getElementById("loginBtn");
-const mainLoginBtn = document.getElementById("mainLoginBtn");
 const avatar = document.getElementById("avatar");
+const userMenu = document.getElementById("userMenu");
+const userName = document.getElementById("userName");
+const userEmail = document.getElementById("userEmail");
+const logoutBtn = document.getElementById("logoutBtn");
 
-/* =====================
-   LOADER
-===================== */
-function showLoader() {
-  document.getElementById("loadingOverlay").style.display = "flex";
-}
+const landing = document.getElementById("landing");
+const dashboard = document.getElementById("dashboard");
+const emailsList = document.getElementById("emailsList");
 
-function hideLoader() {
-  document.getElementById("loadingOverlay").style.display = "none";
-}
-
-/* =====================
-   LOGIN
-===================== */
-loginBtn.onclick = startLogin;
-mainLoginBtn.onclick = startLogin;
-
-function startLogin() {
-  if (isAuthenticating) return;
-
-  isAuthenticating = true;
-  showLoader();
-
+// Bouton login → popup Google
+loginBtn.onclick = () => {
   window.open(
     "http://127.0.0.1:3001/auth/google",
     "_blank",
     "width=500,height=600"
   );
+};
 
-  waitForAuth();
-}
+// Avatar clic → menu toggle
+avatar.onclick = () => {
+  userMenu.style.display = userMenu.style.display === "none" ? "flex" : "none";
+};
 
-function waitForAuth() {
-  const startTime = Date.now();
+// Déconnexion
+logoutBtn.onclick = () => {
+  avatar.style.display = "none";
+  userMenu.style.display = "none";
+  loginBtn.style.display = "block";
+  landing.style.display = "block";
+  dashboard.style.display = "none";
+  emailsList.innerHTML = "";
+};
 
-  const interval = setInterval(async () => {
-    // timeout sécurité 60s
-    if (Date.now() - startTime > 60000) {
-      clearInterval(interval);
-      isAuthenticating = false;
-      hideLoader();
-      return;
-    }
-
-    try {
-      const res = await fetch("http://127.0.0.1:3001/me", {
-        credentials: "include"
-      });
-
-      if (!res.ok) return;
-
-      const user = await res.json();
-      if (!user || !user.email) return;
-
-      clearInterval(interval);
-      onConnected(user);
-
-    } catch {}
-  }, 800);
-}
-
-/* =====================
-   SESSION AU LOAD
-===================== */
-async function checkSession() {
+// Vérifie connexion et met à jour UI
+async function checkAuth() {
   try {
-    const res = await fetch("http://127.0.0.1:3001/me", {
-      credentials: "include"
-    });
-
-    if (!res.ok) {
-      hideLoader();
-      return;
-    }
+    const res = await fetch("http://127.0.0.1:3001/me");
+    if (!res.ok) return;
 
     const user = await res.json();
-    if (!user || !user.email) {
-      hideLoader();
+    loginBtn.style.display = "none";
+    avatar.src = user.picture;
+    avatar.style.display = "block";
+
+    userName.innerText = user.name;
+    userEmail.innerText = user.email;
+
+    // Affiche le dashboard
+    landing.style.display = "none";
+    dashboard.style.display = "block";
+
+    await loadDashboard();
+  } catch (e) {
+    console.log("Utilisateur non connecté");
+  }
+}
+
+// Charge les emails
+async function loadDashboard() {
+  try {
+    const res = await fetch("http://127.0.0.1:3001/emails/today");
+    if (!res.ok) return;
+    const emails = await res.json();
+
+    emailsList.innerHTML = "";
+    if (emails.length === 0) {
+      emailsList.innerHTML = "<p>Aucun email reçu aujourd'hui.</p>";
       return;
     }
 
-    onConnected(user);
-
-  } catch {
-    hideLoader();
+    emails.forEach(email => {
+      const div = document.createElement("div");
+      div.innerHTML = `<strong>${email.from}</strong> : ${email.subject}`;
+      emailsList.appendChild(div);
+    });
+  } catch (e) {
+    emailsList.innerHTML = "<p>Erreur lors de la récupération des emails.</p>";
   }
 }
 
-/* =====================
-   CONNECTED
-===================== */
-function onConnected(user) {
-  if (!user || !user.email) {
-    hideLoader();
-    return;
-  }
-
-  isAuthenticating = false;
-  hideLoader();
-
-  document.getElementById("landing").style.display = "none";
-  document.getElementById("dashboard").style.display = "block";
-
-  avatar.src = user.picture;
-  avatar.style.display = "block";
-
-  loginBtn.style.display = "none";
-  mainLoginBtn.style.display = "none";
-
-  document.getElementById("userName").innerText = user.name;
-  document.getElementById("userEmail").innerText = user.email;
-
-  loadEmails();
-}
-
-/* =====================
-   AVATAR MENU
-===================== */
-avatar.onclick = () => {
-  const menu = document.getElementById("userMenu");
-  menu.style.display =
-    menu.style.display === "block" ? "none" : "block";
-};
-
-/* =====================
-   LOGOUT
-===================== */
-document.getElementById("logoutBtn").onclick = async () => {
-  await fetch("http://127.0.0.1:3001/logout", {
-    method: "POST",
-    credentials: "include"
-  });
-  location.reload();
-};
-
-/* =====================
-   EMAILS
-===================== */
-async function loadEmails() {
-  const res = await fetch("http://127.0.0.1:3001/emails/today", {
-    credentials: "include"
-  });
-
-  if (!res.ok) return;
-
-  const emails = await res.json();
-  if (!Array.isArray(emails)) return;
-
-  const container = document.getElementById("emails");
-  container.innerHTML = "";
-
-  emails.forEach(email => {
-    const card = document.createElement("div");
-    card.className = "email-card";
-    card.innerHTML = `
-      <strong>${email.from}</strong>
-      <p>${email.subject}</p>
-      <em>Résumé : ${fakeSummary(email.subject)}</em>
-    `;
-    container.appendChild(card);
-  });
-}
-
-/* =====================
-   FAKE IA
-===================== */
-function fakeSummary(subject) {
-  return `Email important concernant : "${subject}"`;
-}
-
-/* =====================
-   AUTO CHECK AU LOAD
-===================== */
-document.addEventListener("DOMContentLoaded", () => {
-  showLoader();
-  checkSession();
-});
+checkAuth();
