@@ -9,7 +9,7 @@ const landing = document.getElementById("landing");
 const dashboard = document.getElementById("dashboard");
 const emailsList = document.getElementById("emailsList");
 
-// Bouton login → popup Google
+// Ouvrir popup Google OAuth
 loginBtn.onclick = () => {
   window.open(
     "http://127.0.0.1:3001/auth/google",
@@ -18,13 +18,14 @@ loginBtn.onclick = () => {
   );
 };
 
-// Avatar clic → menu toggle
+// Toggle menu utilisateur
 avatar.onclick = () => {
   userMenu.style.display = userMenu.style.display === "none" ? "flex" : "none";
 };
 
 // Déconnexion
-logoutBtn.onclick = () => {
+logoutBtn.onclick = async () => {
+  await fetch("http://127.0.0.1:3001/logout");
   avatar.style.display = "none";
   userMenu.style.display = "none";
   loginBtn.style.display = "block";
@@ -33,7 +34,7 @@ logoutBtn.onclick = () => {
   emailsList.innerHTML = "";
 };
 
-// Vérifie connexion et met à jour UI
+// Vérifie si l’utilisateur est connecté et charge dashboard
 async function checkAuth() {
   try {
     const res = await fetch("http://127.0.0.1:3001/me");
@@ -47,7 +48,6 @@ async function checkAuth() {
     userName.innerText = user.name;
     userEmail.innerText = user.email;
 
-    // Affiche le dashboard
     landing.style.display = "none";
     dashboard.style.display = "block";
 
@@ -57,7 +57,7 @@ async function checkAuth() {
   }
 }
 
-// Charge les emails
+// Charge les emails du jour
 async function loadDashboard() {
   try {
     const res = await fetch("http://127.0.0.1:3001/emails/today");
@@ -80,4 +80,5 @@ async function loadDashboard() {
   }
 }
 
+// Lancement au démarrage
 checkAuth();
