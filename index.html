@@ -1,142 +1,35 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>MailTime – Assistant Email IA</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #4f46e5, #6366f1, #818cf8);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .app-container {
-            background: #ffffff;
-            width: 100%;
-            max-width: 900px;
-            border-radius: 16px;
-            padding: 32px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .header h1 {
-            font-size: 26px;
-            font-weight: 600;
-            color: #111827;
-        }
-
-        .gmail-btn {
-            background: #111827;
-            color: white;
-            border: none;
-            padding: 12px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .gmail-btn:hover {
-            background: #1f2937;
-        }
-
-        label {
-            font-size: 14px;
-            color: #374151;
-            margin-bottom: 6px;
-            display: block;
-        }
-
-        textarea {
-            width: 100%;
-            height: 200px;
-            border-radius: 10px;
-            border: 1px solid #d1d5db;
-            padding: 14px;
-            font-size: 14px;
-            resize: none;
-        }
-
-        .analyze-btn {
-            margin-top: 16px;
-            background: linear-gradient(135deg, #4f46e5, #6366f1);
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            font-size: 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .analyze-btn:hover {
-            opacity: 0.95;
-        }
-
-        .result {
-            margin-top: 28px;
-            background: #f9fafb;
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 5px solid #6366f1;
-        }
-
-        .result p {
-            margin: 8px 0;
-            color: #111827;
-            font-size: 14px;
-        }
-
-        .footer {
-            margin-top: 24px;
-            text-align: center;
-            font-size: 12px;
-            color: #6b7280;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MailTime</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<div class="app-container">
-    <div class="header">
-        <h1>MailTime</h1>
-        <button class="gmail-btn">Connecter Gmail</button>
+  <header>
+    <img src="logo.png" id="logo" alt="MailTime">
+    <button id="loginBtn">Se connecter</button>
+    <img id="avatar" style="display:none;" />
+    <div id="userMenu" style="display:none;">
+      <p id="userName"></p>
+      <p id="userEmail"></p>
+      <button id="logoutBtn">Se déconnecter</button>
     </div>
+  </header>
 
-    <label>Colle ton email :</label>
-    <textarea id="emailInput" placeholder="Colle ici le contenu de ton email..."></textarea>
+  <main>
+    <section id="landing">
+      <h1>Bienvenue sur MailTime</h1>
+      <p>L’application qui résume vos emails et vous fait gagner du temps.</p>
+    </section>
 
-    <button class="analyze-btn" onclick="analyzeEmail()">Analyser l’email</button>
+    <section id="dashboard" style="display:none;">
+      <h2>Résumé de vos emails</h2>
+      <div id="emailsList"></div>
+    </section>
+  </main>
 
-    <div class="result" id="resultBox" style="display:none;">
-        <p><strong>Résumé :</strong> Répondre à ce mail.</p>
-        <p><strong>Priorité :</strong> Moyenne</p>
-        <p><strong>Temps estimé :</strong> 5 minutes</p>
-        <p><strong>Action :</strong> Répondre aujourd’hui</p>
-    </div>
-
-    <div class="footer">
-        © 2026 MailTime – Assistant Email Intelligent
-    </div>
-</div>
-
-<script>
-    function analyzeEmail() {
-        document.getElementById("resultBox").style.display = "block";
-    }
-</script>
-
+  <script src="script.js"></script>
 </body>
 </html>
