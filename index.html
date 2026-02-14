@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>MailZen – Assistant Email</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  padding: 20px;
+}
+
+h2 {
+  text-align: center;
+}
+
+textarea {
+  width: 100%;
+  height: 150px;
+  padding: 10px;
+  font-size: 14px;
+}
+
+button {
+  padding: 10px 20px;
+  margin-top: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#resultat {
+  background: white;
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>📧 MailZen – Assistant Email IA</h2>
+
+<p>Colle ton email ci-dessous :</p>
+
+<textarea id="mail" placeholder="Colle ici le contenu de l’email..."></textarea>
+<br>
+
+<button onclick="analyser()">Analyser l’email</button>
+
+<div id="resultat"></div>
+
+<script>
+function analyser() {
+  const mail = document.getElementById("mail").value;
+
+  if (mail.trim() === "") {
+    alert("Veuillez coller un email.");
+    return;
+  }
+
+  document.getElementById("resultat").innerHTML = `
+    <h3>📌 Résumé</h3>
+    <p>Cet email nécessite une réponse.</p>
+
+    <h3>🚦 Priorité</h3>
+    <p>🟡 Moyenne</p>
+
+    <h3>⏱ Temps estimé</h3>
+    <p>5 minutes</p>
+
+    <h3>✅ Action recommandée</h3>
+    <p>Répondre aujourd’hui</p>
+  `;
+}
+</script>
+
+</body>
+</html>
