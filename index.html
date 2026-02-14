@@ -1,80 +1,151 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>MailZen – Assistant Email</title>
+  <meta charset="UTF-8">
+  <title>MailTime</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      margin: 0;
+      padding: 0;
+    }
 
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
-  padding: 20px;
-}
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
 
-h2 {
-  text-align: center;
-}
+    h1 {
+      text-align: center;
+      color: #1f2933;
+    }
 
-textarea {
-  width: 100%;
-  height: 150px;
-  padding: 10px;
-  font-size: 14px;
-}
+    .subtitle {
+      text-align: center;
+      color: #6b7280;
+      margin-bottom: 20px;
+    }
 
-button {
-  padding: 10px 20px;
-  margin-top: 10px;
-  font-size: 16px;
-  cursor: pointer;
-}
+    textarea {
+      width: 100%;
+      height: 160px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+    }
 
-#resultat {
-  background: white;
-  padding: 15px;
-  margin-top: 15px;
-  border-radius: 5px;
-}
-</style>
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .analyze {
+      background: #4f46e5;
+      color: white;
+    }
+
+    .analyze:hover {
+      background: #4338ca;
+    }
+
+    .connect {
+      background: #22c55e;
+      color: white;
+    }
+
+    .connect:hover {
+      background: #16a34a;
+    }
+
+    .result {
+      margin-top: 25px;
+      background: #f9fafb;
+      border-radius: 10px;
+      padding: 15px;
+      border-left: 6px solid #4f46e5;
+      display: none;
+    }
+
+    .result p {
+      margin: 8px 0;
+      font-size: 14px;
+    }
+
+    .label {
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+  </style>
 </head>
-
 <body>
 
-<h2>📧 MailZen – Assistant Email IA</h2>
+  <div class="container">
+    <h1>📩 MailTime</h1>
+    <p class="subtitle">L’assistant IA qui te fait gagner du temps avec tes emails</p>
 
-<p>Colle ton email ci-dessous :</p>
+    <label><strong>Colle ton email :</strong></label>
+    <textarea id="emailInput" placeholder="Colle ici le contenu de ton email..."></textarea>
 
-<textarea id="mail" placeholder="Colle ici le contenu de l’email..."></textarea>
-<br>
+    <div class="buttons">
+      <button class="analyze" onclick="analyserEmail()">🔍 Analyser</button>
+      <button class="connect" onclick="connectEmail()">🔗 Connecter Gmail</button>
+    </div>
 
-<button onclick="analyser()">Analyser l’email</button>
+    <div class="result" id="result">
+      <p><span class="label">📌 Résumé :</span> <span id="resume"></span></p>
+      <p><span class="label">⚠️ Priorité :</span> <span id="priorite"></span></p>
+      <p><span class="label">⏱️ Temps estimé :</span> <span id="temps"></span></p>
+      <p><span class="label">✅ Action :</span> <span id="action"></span></p>
+    </div>
 
-<div id="resultat"></div>
+    <footer>
+      © 2026 MailTime – Assistant Email IA
+    </footer>
+  </div>
 
-<script>
-function analyser() {
-  const mail = document.getElementById("mail").value;
+  <script>
+    function analyserEmail() {
+      const email = document.getElementById("emailInput").value;
+      if (!email.trim()) {
+        alert("Veuillez coller un email.");
+        return;
+      }
 
-  if (mail.trim() === "") {
-    alert("Veuillez coller un email.");
-    return;
-  }
+      // Simulation IA (démo)
+      document.getElementById("resume").innerText = "Email de sécurité nécessitant une action.";
+      document.getElementById("priorite").innerText = "Moyenne";
+      document.getElementById("temps").innerText = "5 minutes";
+      document.getElementById("action").innerText = "Vérifier et répondre aujourd’hui";
 
-  document.getElementById("resultat").innerHTML = `
-    <h3>📌 Résumé</h3>
-    <p>Cet email nécessite une réponse.</p>
+      document.getElementById("result").style.display = "block";
+    }
 
-    <h3>🚦 Priorité</h3>
-    <p>🟡 Moyenne</p>
-
-    <h3>⏱ Temps estimé</h3>
-    <p>5 minutes</p>
-
-    <h3>✅ Action recommandée</h3>
-    <p>Répondre aujourd’hui</p>
-  `;
-}
-</script>
+    function connectEmail() {
+      alert("Connexion Gmail bientôt disponible 🔐\n(Fonctionnalité en développement)");
+    }
+  </script>
 
 </body>
 </html>
