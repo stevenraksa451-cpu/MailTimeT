@@ -1,84 +1,79 @@
 const loginBtn = document.getElementById("loginBtn");
+const mainLoginBtn = document.getElementById("mainLoginBtn");
 const avatar = document.getElementById("avatar");
-const userMenu = document.getElementById("userMenu");
-const userName = document.getElementById("userName");
-const userEmail = document.getElementById("userEmail");
-const logoutBtn = document.getElementById("logoutBtn");
-
 const landing = document.getElementById("landing");
 const dashboard = document.getElementById("dashboard");
-const emailsList = document.getElementById("emailsList");
+const emailsDiv = document.getElementById("emails");
 
-// Ouvrir popup Google OAuth
-loginBtn.onclick = () => {
+let authCheckInterval = null;
+
+/* 🔐 OUVERTURE GOOGLE LOGIN */
+function loginWithGoogle() {
   window.open(
     "http://127.0.0.1:3001/auth/google",
     "_blank",
     "width=500,height=600"
   );
-};
 
-// Toggle menu utilisateur
-avatar.onclick = () => {
-  userMenu.style.display = userMenu.style.display === "none" ? "flex" : "none";
-};
-
-// Déconnexion
-logoutBtn.onclick = async () => {
-  await fetch("http://127.0.0.1:3001/logout");
-  avatar.style.display = "none";
-  userMenu.style.display = "none";
-  loginBtn.style.display = "block";
-  landing.style.display = "block";
-  dashboard.style.display = "none";
-  emailsList.innerHTML = "";
-};
-
-// Vérifie si l’utilisateur est connecté et charge dashboard
-async function checkAuth() {
-  try {
-    const res = await fetch("http://127.0.0.1:3001/me");
-    if (!res.ok) return;
-
-    const user = await res.json();
-    loginBtn.style.display = "none";
-    avatar.src = user.picture;
-    avatar.style.display = "block";
-
-    userName.innerText = user.name;
-    userEmail.innerText = user.email;
-
-    landing.style.display = "none";
-    dashboard.style.display = "block";
-
-    await loadDashboard();
-  } catch (e) {
-    console.log("Utilisateur non connecté");
-  }
+  // Commence à vérifier si l'utilisateur est connecté
+  startAuthPolling();
 }
 
-// Charge les emails du jour
-async function loadDashboard() {
-  try {
-    const res = await fetch("http://127.0.0.1:3001/emails/today");
-    if (!res.ok) return;
-    const emails = await res.json();
+loginBtn.onclick = loginWithGoogle;
+mainLoginBtn.onclick = loginWithGoogle;
 
-    emailsList.innerHTML = "";
-    if (emails.length === 0) {
-      emailsList.innerHTML = "<p>Aucun email reçu aujourd'hui.</p>";
-      return;
+/* 🔄 VÉRIFIE SI L'UTILISATEUR EST CONNECTÉ */
+function startAuthPolling() {
+  if (authCheckInterval) return;
+
+  authCheckInterval = setInterval(async () => {
+    try {
+      const res = await fetch("http://127.0.0.1:3001/me");
+      if (!res.ok) return;
+
+      const user = await res.json();
+      clearInterval(authCheckInterval);
+      authCheckInterval = null;
+
+      onUserAuthenticated(user);
+    } catch (err) {
+      // ignore
     }
-
-    emails.forEach(email => {
-      const div = document.createElement("div");
-      div.innerHTML = `<strong>${email.from}</strong> : ${email.subject}`;
-      emailsList.appendChild(div);
-    });
-  } catch (e) {
-    emailsList.innerHTML = "<p>Erreur lors de la récupération des emails.</p>";
-  }
+  }, 1000);
 }
 
-// Lancement au démarrage
-checkAuth();
+/* ✅ UTILISATEUR CONNECTÉ */
+function onUserAuthenticated(user) {
+  loginBtn.style.display = "none";
+  mainLoginBtn.style.display = "none";
+
+  avatar.src = user.picture;
+  avatar.style.display = "block";
+
+  landing.style.display = "none";
+  dashboard.style.display = "block";
+
+  loadEmails();
+}
+
+/* 📩 CHARGEMENT DES EMAILS */
+async function loadEmails() {
+  const res = await fetch("http://127.0.0.1:3001/emails/today");
+  const emails = await res.json();
+
+  emailsDiv.innerHTML = "";
+
+  if (!emails.length) {
+    emailsDiv.innerHTML = "<p>Aucun email aujourd’hui.</p>";
+    return;
+  }
+
+  emails.forEach(e => {
+    const div = document.createElement("div");
+    div.innerHTML = `<strong>${e.from}</strong><br>${e.subject}`;
+    emailsDiv.appendChild(div);
+  });
+}
+
+/* 🔁 AU RECHARGEMENT DE LA PAGE */
+startAuthPolling();
